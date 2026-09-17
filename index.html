@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<title>Gastos</title>
+<style>
+:root{--bg:#0f1117;--surf:#1a1d27;--surf2:#22263a;--bdr:#2e3250;--acc:#5b7fff;--acc2:#38d9a9;--red:#ff5c5c;--txt:#e8eaf6;--mut:#7b82a8;--grn:#38d9a9;--yel:#f5c542;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--txt);font-family:system-ui,sans-serif;min-height:100vh;}
+nav{background:var(--surf);border-bottom:1px solid var(--bdr);padding:0 20px;display:flex;align-items:center;gap:6px;height:54px;position:sticky;top:0;z-index:100;}
+.logo{font-weight:800;font-size:17px;color:var(--acc);margin-right:12px;}
+.nb{background:none;border:none;color:var(--mut);padding:7px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;transition:all .15s;}
+.nb:hover{background:var(--surf2);color:var(--txt);}
+.nb.on{background:var(--acc);color:#fff;}
+.nm{margin-left:auto;}
+.nm select{background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);padding:6px 10px;border-radius:8px;font-size:13px;cursor:pointer;}
+.pg{display:none;padding:20px;max-width:1400px;margin:0 auto;}
+.pg.on{display:block;}
+.srow{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
+.sc{background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:18px;}
+.sc .lb{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.sc .vl{font-size:26px;font-weight:700;letter-spacing:-1px;}
+.neg{color:var(--red);}.pos{color:var(--grn);}
+.panels{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.p3{grid-template-columns:1fr 1fr 1fr;}
+.panel{background:var(--surf);border:1px solid var(--bdr);border-radius:12px;overflow:hidden;}
+.ph{padding:14px 18px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;}
+.pt{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--mut);}
+.ptot{font-size:14px;font-weight:700;color:var(--acc);}
+.prow{display:grid;grid-template-columns:80px 1fr auto;gap:6px;padding:7px 18px;font-size:13px;align-items:center;border-bottom:1px solid transparent;transition:background .1s;}
+.prow:hover{background:var(--surf2);}
+.alerta-item.al-today{background:rgba(255,138,0,.14);border-left:3px solid #ff8a00;}
+.dot.dtoday{background:#ff8a00;box-shadow:0 0 8px rgba(255,138,0,.8);}
+.prow .dt{color:var(--mut);font-size:11px;}
+.prow .rv{font-weight:600;text-align:right;}
+.parc{font-size:11px;background:rgba(56,217,169,.12);color:var(--acc2);padding:2px 6px;border-radius:4px;}
+.anv{padding:10px 18px;display:flex;flex-direction:column;gap:5px;}
+.anr{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;background:var(--surf2);border-radius:8px;}
+.anc{font-size:12px;color:var(--mut);text-transform:uppercase;}
+.anval{font-size:14px;font-weight:700;color:var(--acc);}
+.cl{display:flex;flex-direction:column;gap:6px;padding:12px 18px;}
+.ci{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:var(--surf2);border-radius:8px;font-size:14px;}
+.cn{font-weight:600;}.cv{font-weight:700;color:var(--acc);}
+.alerta-item{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-radius:10px;margin-bottom:8px;border:1px solid transparent;}
+.al-ok{background:rgba(56,217,169,.06);border-color:rgba(56,217,169,.2);}
+.al-warn{background:rgba(245,197,66,.08);border-color:rgba(245,197,66,.3);}
+.al-over{background:rgba(255,92,92,.08);border-color:rgba(255,92,92,.3);}
+.al-paid{background:rgba(255,255,255,.02);border-color:var(--bdr);opacity:.55;}
+.al-name{font-weight:600;font-size:14px;}
+.al-sub{font-size:11px;color:var(--mut);margin-top:2px;}
+.al-right{display:flex;align-items:center;gap:10px;}
+.al-val{font-weight:700;font-size:14px;}
+.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.dok{background:var(--grn);}.dwarn{background:var(--yel);}.dover{background:var(--red);}.dpaid{background:var(--mut);}
+.fsec{background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:22px;margin-bottom:14px;}
+.ftit{font-size:14px;font-weight:700;margin-bottom:16px;}
+.fg{display:grid;gap:10px;margin-bottom:10px;}
+.c2{grid-template-columns:1fr 1fr;}.c3{grid-template-columns:1fr 1fr 1fr;}.c4{grid-template-columns:1fr 1fr 1fr 1fr;}
+.fld{display:flex;flex-direction:column;gap:5px;}
+.fld label{font-size:11px;color:var(--mut);font-weight:500;text-transform:uppercase;letter-spacing:.3px;}
+.fld input,.fld select{background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);padding:9px 11px;border-radius:8px;font-size:13px;transition:border .15s;}
+.fld input:focus,.fld select:focus{outline:none;border-color:var(--acc);}
+.fld input::placeholder{color:var(--mut);}
+.btn{padding:9px 18px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;}
+.bp{background:var(--acc);color:#fff;}.bp:hover{background:#4a6ef5;}
+.bs{background:var(--acc2);color:#0f1117;}.bs:hover{background:#2ec99a;}
+.bd{background:transparent;border:1px solid var(--red);color:var(--red);}.bd:hover{background:var(--red);color:#fff;}
+.bg{background:var(--surf2);color:var(--txt);}.bg:hover{background:var(--bdr);}
+.brow{display:flex;gap:8px;margin-top:4px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{padding:9px 11px;text-align:left;font-size:11px;color:var(--mut);text-transform:uppercase;border-bottom:1px solid var(--bdr);}
+td{padding:9px 11px;border-bottom:1px solid var(--bdr);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--surf2);}
+.tag{display:inline-flex;font-size:11px;padding:2px 7px;border-radius:20px;}
+.ti{background:rgba(56,217,169,.12);color:var(--grn);}
+.te{background:rgba(255,92,92,.12);color:var(--red);}
+.si{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--surf2);border-radius:9px;margin-bottom:6px;}
+.inline-input{background:var(--surf);border:1px solid var(--bdr);color:var(--txt);padding:5px 8px;border-radius:6px;font-size:13px;width:100px;}
+.inline-input:focus{outline:none;border-color:var(--acc);}
+.drop{border:2px dashed var(--bdr);border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:border .15s;}
+.drop:hover{border-color:var(--acc);}
+.empty{padding:20px;text-align:center;color:var(--mut);font-size:13px;}
+.sec-label{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin:16px 0 10px;}
+#toast{position:fixed;bottom:22px;right:22px;background:var(--acc2);color:#0f1117;padding:11px 18px;border-radius:10px;font-weight:600;font-size:13px;transform:translateY(80px);opacity:0;transition:all .3s;z-index:999;}
+#toast.show{transform:translateY(0);opacity:1;}
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;}
+.mo.open{display:flex;}
+.mbox{background:var(--surf);border:1px solid var(--bdr);border-radius:14px;padding:26px;width:460px;max-width:95vw;}
+.mbox h3{font-size:17px;font-weight:700;margin-bottom:12px;}
+.mbox p{color:var(--mut);font-size:13px;}
+.mact{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;}
+@media(max-width:900px){
+  .srow{grid-template-columns:1fr 1fr;}
+  .panels,.p3{grid-template-columns:1fr;}
+  .c4{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:640px){
+  nav{padding:0 8px;gap:2px;height:auto;flex-wrap:wrap;padding:6px 8px;}
+  .logo{font-size:15px;margin-right:4px;}
+  .nb{padding:5px 7px;font-size:11px;}
+  .nm{width:100%;order:99;margin-left:0;margin-top:4px;}
+  .pg{padding:10px;}
+  .srow{grid-template-columns:1fr;}
+  .sc .vl{font-size:20px;}
+  .panels,.p3{grid-template-columns:1fr;}
+  div[style*="grid-template-columns:1fr 280px"]{grid-template-columns:1fr!important;}
+  .c2,.c3,.c4{grid-template-columns:1fr!important;}
+  .fsec{padding:14px;}
+  .fg{gap:8px;}
+  .panel div[style*="overflow-x"],div[style*="overflow-x:auto"]{overflow-x:auto;}
+  table{font-size:11px;min-width:500px;}
+  th,td{padding:6px 7px;}
+  .brow{flex-wrap:wrap;}
+  .btn{font-size:12px;padding:8px 12px;}
+  .alerta-item{flex-direction:column;align-items:flex-start;gap:8px;}
+  .al-right{width:100%;justify-content:space-between;}
+  .mbox{padding:18px;width:95vw;}
+  .prow{grid-template-columns:60px 1fr auto;font-size:12px;padding:6px 10px;}
+  #toast{bottom:10px;right:10px;left:10px;text-align:center;}
+  #selMesBtn{font-size:12px;min-width:100px;}
+}
+</style>
+</head>
+<body>
+
+<div id="login-screen" style="position:fixed;inset:0;background:#0f1117;z-index:9999;display:flex;align-items:center;justify-content:center;">
+  <div style="background:#1a1d27;border:1px solid #2e3250;border-radius:16px;padding:40px;width:340px;text-align:center;">
+    <div style="font-size:40px;margin-bottom:12px">💰</div>
+    <div style="font-size:22px;font-weight:700;color:#5b7fff;margin-bottom:6px">Gastos App</div>
+    <div style="font-size:13px;color:#7b82a8;margin-bottom:28px">Digite a senha para acessar</div>
+    <input type="password" id="login-input" placeholder="Senha..." 
+      style="width:100%;background:#22263a;border:1px solid #2e3250;color:#e8eaf6;padding:12px 14px;border-radius:10px;font-size:14px;margin-bottom:12px;text-align:center;letter-spacing:2px"
+      onkeydown="if(event.key==='Enter')verificarSenha()">
+    <button onclick="verificarSenha()" 
+      style="width:100%;background:#5b7fff;color:#fff;border:none;padding:12px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">
+      Entrar
+    </button>
+    <div id="login-erro" style="color:#ff5c5c;font-size:12px;margin-top:10px;display:none">Senha incorreta. Tente novamente.</div>
+  </div>
+</div>
+<script>
+(function(){
+  if(sessionStorage.getItem('gastos_auth')==='ok'){
+    document.getElementById('login-screen').style.display='none';
+  }
+  setTimeout(()=>document.getElementById('login-input')?.focus(),100);
+})();
+
+function verificarSenha(){
+  const senha = document.getElementById('login-input').value;
+  const correta = '182427@Pedro';
+  if(senha === correta){
+    sessionStorage.setItem('gastos_auth','ok');
+    document.getElementById('login-screen').style.display='none';
+  } else {
+    document.getElementById('login-erro').style.display='block';
+    document.getElementById('login-input').value='';
+    document.getElementById('login-input').focus();
+    setTimeout(()=>document.getElementById('login-erro').style.display='none',3000);
+  }
+}
+</script>
+
+<nav>
+  <span class="logo">💰 Gastos</span><span id="fb-status" style="font-size:10px;color:var(--mut);margin-left:4px">☁️</span><button onclick="sincronizar()" style="background:none;border:none;cursor:pointer;font-size:16px;margin-left:4px;padding:2px 6px;border-radius:6px;color:var(--mut)" title="Enviar dados para a nuvem">🔄</button><button onclick="baixarNuvem()" style="background:none;border:none;cursor:pointer;font-size:16px;padding:2px 6px;border-radius:6px;color:var(--mut)" title="Baixar dados da nuvem">⬇️</button>
+  <button class="nb on" onclick="showPage('dashboard',this)">Visão Geral</button>
+  <button class="nb" onclick="showPage('lancamento',this)">Lançar</button>
+  <button class="nb" onclick="showPage('fixos',this)">Fixos & Boletos</button>
+  <button class="nb" onclick="showPage('alertas',this)">🔔 Alertas</button>
+  <button class="nb" onclick="showPage('cartoes',this)">Cartões</button>
+  <button class="nb" onclick="showPage('cobrancas',this)">💰 Cobranças</button>
+  <button class="nb" onclick="showPage('vencimentos',this)">📅 Vencimentos</button>
+  <button class="nb" onclick="showPage('historico',this)">🕘 Histórico</button>
+  <button class="nb" onclick="showPage('config',this)">Config</button>
+  <div class="nm" style="display:flex;align-items:center;gap:6px">
+    <button onclick="navMes(-1)" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">‹</button>
+    <button id="selMesBtn" onclick="toggleMesPicker()" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;min-width:130px;text-align:center">—</button>
+    <button onclick="navMes(1)" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">›</button>
+  </div>
+  <div id="mesPicker" style="display:none;position:fixed;top:60px;right:20px;background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:16px;z-index:500;width:280px;box-shadow:0 8px 32px rgba(0,0,0,.5)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <button onclick="navPickerAno(-1)" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:14px">‹</button>
+      <span id="pickerAno" style="font-weight:700;font-size:15px"></span>
+      <button onclick="navPickerAno(1)" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:14px">›</button>
+    </div>
+    <div id="pickerMeses" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px"></div>
+  </div>
+</nav>
+
+<!-- DASHBOARD -->
+<div class="pg on" id="pg-dashboard">
+  <div class="srow">
+    <div class="sc"><div class="lb">Débitos do mês</div><div class="vl neg" id="db-deb">R$ 0,00</div></div>
+    <div class="sc"><div class="lb">Saldo em dinheiro</div><div class="vl pos" id="db-sal">R$ 0,00</div></div>
+    <div class="sc"><div class="lb">Saldo após pagar</div><div class="vl" id="db-res">R$ 0,00</div></div>
+  </div>
+  <div id="db-alert-banner" style="display:none;margin-bottom:14px"></div>
+  <div id="db-cobrancas" style="display:none;margin-bottom:14px"></div>
+  <div class="panels p3">
+    <div class="panel">
+      <div class="ph"><span class="pt">Contas Fixas</span><span class="ptot" id="db-fx-tot">R$ 0,00</span></div>
+      <div id="db-fx"></div>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="pt">Boletos</span><span class="ptot" id="db-bl-tot">R$ 0,00</span></div>
+      <div id="db-bl"></div>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="pt">Cartões Analítico</span><span class="ptot" id="db-ca-tot">R$ 0,00</span></div>
+      <div class="anv" id="db-ca"></div>
+    </div>
+  </div>
+  <div class="panels">
+    <div class="panel">
+      <div class="ph"><span class="pt">Total por Cartão</span></div>
+      <div class="cl" id="db-cards"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="panel">
+        <div class="ph"><span class="pt">Entrada de Dinheiro</span><span class="ptot pos" id="db-en-tot">R$ 0,00</span></div>
+        <div id="db-en"></div>
+      </div>
+      <div class="panel">
+        <div class="ph"><span class="pt">Saída de Dinheiro</span><span class="ptot" style="color:var(--red)" id="db-sa-tot">R$ 0,00</span></div>
+        <div id="db-sa"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LANÇAMENTO -->
+<div class="pg" id="pg-lancamento">
+  <div style="display:grid;grid-template-columns:1fr 280px;gap:14px;align-items:start">
+  <div>
+  <div class="fsec">
+    <div class="ftit">➕ Novo lançamento</div>
+    <div class="fg c2" style="margin-bottom:10px">
+      <div class="fld"><label>Tipo</label>
+        <select id="lc-tipo" onchange="toggleTipo()">
+          <option value="cartao">Gasto no Cartão</option>
+          <option value="entrada">Entrada de Dinheiro</option>
+          <option value="saida">Saída de Dinheiro</option>
+        </select>
+      </div>
+      <div class="fld"><label>Mês</label>
+        <div style="display:flex;align-items:center;gap:6px">
+          <button type="button" onclick="navLcMes(-1)" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);width:32px;height:38px;border-radius:8px;cursor:pointer;font-size:16px">‹</button>
+          <button type="button" id="lc-mes-btn" onclick="toggleLcPicker()" style="flex:1;background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);padding:9px 11px;border-radius:8px;cursor:pointer;font-size:13px;text-align:center">—</button>
+          <button type="button" onclick="navLcMes(1)" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);width:32px;height:38px;border-radius:8px;cursor:pointer;font-size:16px">›</button>
+          <select id="lc-mes" style="display:none"></select>
+        </div>
+        <div id="lc-mes-picker" style="display:none;position:absolute;z-index:600;background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:16px;width:280px;box-shadow:0 8px 32px rgba(0,0,0,.5);margin-top:4px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <button type="button" onclick="navLcPickerAno(-1)" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);width:28px;height:28px;border-radius:6px;cursor:pointer">‹</button>
+            <span id="lc-picker-ano" style="font-weight:700;font-size:15px"></span>
+            <button type="button" onclick="navLcPickerAno(1)" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);width:28px;height:28px;border-radius:6px;cursor:pointer">›</button>
+          </div>
+          <div id="lc-picker-meses" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px"></div>
+        </div>
+      </div>
+    </div>
+    <div id="lc-cf">
+      <div class="fg c4" style="margin-bottom:10px">
+        <div class="fld"><label>Cartão</label><select id="lc-cartao"></select></div>
+        <div class="fld"><label>Categoria</label>
+          <select id="lc-cat" onchange="autoRecorrentePorCategoria()">
+            <option value="MERCADO">Mercado</option>
+            <option value="PARCELAS">Compras Parceladas</option>
+            <option value="GASOLINA">Gasolina</option>
+            <option value="COMER F/C">Comer Fora / Pedir</option>
+            <option value="FERVO/LAZER">Fervo / Lazer</option>
+            <option value="SERVIÇOS">Serviços</option>
+            <option value="VARIAVEIS">Variáveis</option>
+          </select>
+        </div>
+        <div class="fld"><label>Data</label><input type="date" id="lc-data"></div>
+        <div class="fld"><label>Valor (R$)</label><input type="text" id="lc-val" placeholder="R$ 0,00" oninput="mascaraMoeda(this);calcParcela()" style="ime-mode:disabled"></div>
+      </div>
+      <div class="fg c3" style="margin-bottom:10px">
+        <div class="fld" style="grid-column:1/3"><label>Descrição</label><input type="text" id="lc-desc" placeholder="Ex: Germania, Superpão..."></div>
+        <div class="fld" style="grid-column:1/3"><label>Observação (opcional)</label><input type="text" id="lc-obs" placeholder="Ex: compra parcelada no débito..."></div>
+        <div class="fld"><label>Parcelado?</label>
+          <select id="lc-parc" onchange="toggleParc()"><option value="0">Não</option><option value="1">Sim</option></select>
+        </div>
+      </div>
+      <div class="fg c3" style="margin-bottom:10px;align-items:end">
+        <div class="fld" style="grid-column:1/3">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+            <input type="checkbox" id="lc-recorrente" onchange="onRecorrenteManual()" style="width:16px;height:16px">
+            🔁 Recorrente (repete todo mês a partir de agora) <span style="font-size:11px;color:var(--mut)">— já vem marcado em Serviços</span>
+          </label>
+        </div>
+        <div class="fld" id="lc-rec-venc-wrap" style="display:none"><label>Dia vencimento (opcional)</label><input type="number" id="lc-rec-venc" placeholder="Ex: 10" min="1" max="31"></div>
+      </div>
+      <div id="lc-pf" style="display:none" class="fg c3" style="margin-bottom:10px">
+        <div class="fld"><label>Parcela atual</label><input type="number" id="lc-pa" placeholder="1" min="1"></div>
+        <div class="fld"><label>Total parcelas</label><input type="number" id="lc-pt" placeholder="12" min="1" oninput="calcParcela()"></div>
+        <div class="fld"><label>Valor por parcela <span style="font-size:10px;color:var(--mut)">(auto)</span></label><input type="text" id="lc-pv" placeholder="R$ 0,00" oninput="mascaraMoeda(this)" style="ime-mode:disabled"></div>
+      </div>
+    </div>
+    <div id="lc-of" style="display:none">
+      <div class="fg c3" style="margin-bottom:10px">
+        <div class="fld"><label>Data</label><input type="date" id="lc-od"></div>
+        <div class="fld"><label>Descrição</label><input type="text" id="lc-odesc" placeholder="Ex: Salário, PIX recebido..."></div>
+        <div class="fld"><label>Observação (opcional)</label><input type="text" id="lc-oobs" placeholder="Observação..."></div>
+        <div class="fld"><label>Valor (R$)</label><input type="text" id="lc-oval" placeholder="R$ 0,00" oninput="mascaraMoeda(this)" style="ime-mode:disabled"></div>
+      </div>
+    </div>
+    <div class="brow" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <button class="btn bp" onclick="salvar()">Salvar</button>
+      <button class="btn bg" onclick="limpar()">Limpar</button>
+      <button class="btn bg" onclick="desfazer()" id="btn-desfazer" style="opacity:.7" title="Desfazer último lançamento">↩ Desfazer</button>
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;color:var(--mut)">
+        <input type="checkbox" id="lc-multi" style="cursor:pointer">
+        Modo múltiplos lançamentos
+      </label>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="ph"><span class="pt">Lançamentos do mês</span><span class="ptot" id="lc-count">0 itens</span></div>
+    <div style="overflow-x:auto;padding-bottom:8px">
+      <table><thead><tr>
+        <th>Data</th><th>Cartão/Tipo</th><th>Categoria</th><th>Descrição</th><th>Parcela</th><th>Valor</th><th></th>
+      </tr></thead><tbody id="lc-tb"></tbody></table>
+    </div>
+  </div>
+  </div>
+  <div style="position:sticky;top:60px">
+    <div class="fsec">
+      <div style="font-size:11px;font-weight:700;color:var(--mut);letter-spacing:.5px;margin-bottom:12px">📋 ÚLTIMOS LANÇAMENTOS</div>
+      <div id="lc-preview"><div style="color:var(--mut);font-size:12px">Nenhum lançamento ainda</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- FIXOS & BOLETOS -->
+<div class="pg" id="pg-fixos">
+  <div class="panels">
+    <div class="fsec">
+      <div class="ftit">🔒 Nova Conta Fixa</div>
+      <div class="fg c3" style="margin-bottom:10px">
+        <div class="fld"><label>Descrição</label><input type="text" id="fx-desc" placeholder="Aluguel, Internet..."></div>
+        <div class="fld"><label>Valor (R$)</label><input type="number" id="fx-val" placeholder="0,00" step="0.01"></div>
+        <div class="fld"><label>Dia vencimento</label><input type="number" id="fx-venc" placeholder="Ex: 5" min="1" max="31"></div>
+      </div>
+      <div class="brow"><button class="btn bp" onclick="addFixo()">Adicionar</button></div>
+    </div>
+    <div class="fsec">
+      <div class="ftit">📄 Novo Boleto</div>
+      <div class="fg c2" style="margin-bottom:10px">
+        <div class="fld"><label>Descrição</label><input type="text" id="bl-desc" placeholder="IPVA, Seguro, Empréstimo..."></div>
+        <div class="fld"><label>Valor (R$)</label><input type="text" id="bl-val" placeholder="R$ 0,00" oninput="mascaraMoeda(this)"></div>
+        <div class="fld"><label>Parcela atual</label><input type="text" id="bl-pa" placeholder="1 (opcional)"></div>
+        <div class="fld"><label>Total parcelas</label><input type="text" id="bl-pt" placeholder="12 (opcional)"></div>
+        <div class="fld"><label>Mês inicial</label>
+          <div style="position:relative">
+            <div style="display:flex;align-items:center;gap:6px">
+              <button type="button" onclick="navBlMes(-1)" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);width:32px;height:38px;border-radius:8px;cursor:pointer;font-size:16px">‹</button>
+              <button type="button" id="bl-mes-btn" onclick="toggleBlPicker()" style="flex:1;background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);padding:9px 11px;border-radius:8px;cursor:pointer;font-size:13px;text-align:center">—</button>
+              <button type="button" onclick="navBlMes(1)" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);width:32px;height:38px;border-radius:8px;cursor:pointer;font-size:16px">›</button>
+              <select id="bl-mes" style="display:none"></select>
+            </div>
+            <div id="bl-mes-picker" style="display:none;position:absolute;z-index:600;background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:16px;width:280px;box-shadow:0 8px 32px rgba(0,0,0,.5);margin-top:4px">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                <button type="button" onclick="navBlPickerAno(-1)" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);width:28px;height:28px;border-radius:6px;cursor:pointer">‹</button>
+                <span id="bl-picker-ano" style="font-weight:700;font-size:15px"></span>
+                <button type="button" onclick="navBlPickerAno(1)" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);width:28px;height:28px;border-radius:6px;cursor:pointer">›</button>
+              </div>
+              <div id="bl-picker-meses" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px"></div>
+            </div>
+          </div>
+        </div>
+        <div class="fld"><label>Dia vencimento</label><input type="number" id="bl-venc" placeholder="Ex: 10" min="1" max="31"></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <input type="checkbox" id="bl-pontual" style="width:15px;height:15px;cursor:pointer">
+        <label for="bl-pontual" style="font-size:13px;cursor:pointer;color:var(--txt)">Pontual (não repete todo mês)</label>
+      </div>
+      <div class="brow"><button class="btn bp" onclick="addBoleto()">Adicionar</button></div>
+    </div>
+  </div>
+  <div class="panels">
+    <div class="panel">
+      <div class="ph"><span class="pt">Contas Fixas</span><span style="font-size:11px;color:var(--mut)">valores editáveis</span></div>
+      <div style="padding:12px" id="fx-list"></div>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="pt">Boletos</span></div>
+      <div style="overflow-x:auto;padding-bottom:8px">
+        <table><thead><tr><th>Parcela</th><th>Descrição</th><th>Valor padrão</th><th>Venc.</th><th>Início</th><th>Observação</th><th></th></tr></thead>
+        <tbody id="bl-tb"></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ALERTAS -->
+<div class="pg" id="pg-alertas">
+  <div class="fsec">
+    <div class="ftit">🔔 Alertas de vencimento — <span id="al-mes-label" style="color:var(--acc);font-weight:400"></span></div>
+    <div style="display:flex;gap:20px;font-size:12px;color:var(--mut);margin-bottom:20px;flex-wrap:wrap">
+      <span><span style="color:var(--grn)">●</span> Pago</span>
+      <span><span style="color:var(--acc2)">●</span> Em dia (5+ dias)</span>
+      <span><span style="color:var(--yel)">●</span> Atenção (1–4 dias)</span>
+      <span><span style="color:var(--red)">●</span> Vencido / Hoje</span>
+    </div>
+    <div class="sec-label">Contas Fixas</div>
+    <div id="al-fixas"></div>
+    <div class="sec-label">Boletos</div>
+    <div id="al-boletos"></div>
+    <div class="sec-label">Faturas dos Cartões</div>
+    <div id="al-cartoes"></div>
+    <div class="sec-label">Lembretes de Assinaturas & Serviços (Cartão)</div>
+    <div id="al-gastos-fixos"></div>
+  </div>
+</div>
+
+<!-- CARTÕES -->
+<div class="pg" id="pg-cartoes">
+  <div class="panels">
+    <div class="fsec">
+      <div class="ftit">💳 Novo Cartão</div>
+      <div class="fg c2" style="margin-bottom:10px">
+        <div class="fld"><label>Nome do cartão</label><input type="text" id="ct-nome" placeholder="Ex: Nubank, C6 Val..."></div>
+        <div class="fld"><label>Dia vencimento da fatura</label><input type="number" id="ct-venc" placeholder="Ex: 10" min="1" max="31"></div>
+      </div>
+      <div class="brow"><button class="btn bp" onclick="addCartao()">Adicionar</button></div>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="pt">Cartões cadastrados</span></div>
+      <div style="padding:12px" id="ct-list"></div>
+    </div>
+  </div>
+
+  <!-- ASSINATURAS E SERVIÇOS RECORRENTES VINCULADOS -->
+  <div class="fsec" style="margin-top:14px">
+    <div class="ftit">🔁 Assinaturas & Serviços no Cartão <span style="font-size:12px;color:var(--mut);font-weight:400">(Cobrados na fatura do cartão — quitados ao pagar a fatura)</span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:12px">
+      <div class="fld"><label>Cartão</label><select id="gf-cartao" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);padding:9px 11px;border-radius:8px;font-size:13px"></select></div>
+      <div class="fld"><label>Categoria</label><select id="gf-cat" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);padding:9px 11px;border-radius:8px;font-size:13px"></select></div>
+      <div class="fld"><label>Descrição</label><input type="text" id="gf-desc" placeholder="Netflix, Claude, Academia..."></div>
+      <div class="fld"><label>Valor (R$)</label><input type="text" id="gf-val" placeholder="R$ 0,00" oninput="mascaraMoeda(this)"></div>
+      <div class="fld"><label>Dia cobrança/venc.</label><input type="number" id="gf-venc" placeholder="Ex: 10" min="1" max="31"></div>
+      <div class="fld"><label>Mês início</label>
+        <div style="position:relative">
+          <div style="display:flex;align-items:center;gap:6px">
+            <button type="button" onclick="navGfMes(-1)" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);width:32px;height:38px;border-radius:8px;cursor:pointer;font-size:16px">‹</button>
+            <button type="button" id="gf-mes-btn" onclick="toggleGfPicker()" style="flex:1;background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);padding:9px 11px;border-radius:8px;cursor:pointer;font-size:13px;text-align:center">—</button>
+            <button type="button" onclick="navGfMes(1)" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);width:32px;height:38px;border-radius:8px;cursor:pointer;font-size:16px">›</button>
+            <select id="gf-mes" style="display:none"></select>
+          </div>
+          <div id="gf-mes-picker" style="display:none;position:absolute;z-index:600;background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:16px;width:280px;box-shadow:0 8px 32px rgba(0,0,0,.5);margin-top:4px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+              <button type="button" onclick="navGfPickerAno(-1)" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);width:28px;height:28px;border-radius:6px;cursor:pointer">‹</button>
+              <span id="gf-picker-ano" style="font-weight:700;font-size:15px"></span>
+              <button type="button" onclick="navGfPickerAno(1)" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);width:28px;height:28px;border-radius:6px;cursor:pointer">›</button>
+            </div>
+            <div id="gf-picker-meses" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+      <input type="checkbox" id="gf-manual" style="width:16px;height:16px;cursor:pointer">
+      <label for="gf-manual" style="font-size:13px;cursor:pointer;color:var(--txt)">🔔 Renovação manual / Não automático (gerar lembrete de ação)</label>
+    </div>
+    <button class="btn bp" onclick="addGastoFixoCartao()">＋ Adicionar assinatura/serviço</button>
+    <div id="gf-lista" style="margin-top:14px"></div>
+  </div>
+
+  <div class="fsec" style="margin-top:18px">
+    <div class="ftit">🔍 Gastos por Cartão</div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <select id="det-cartao" onchange="renderDetalhe()" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);padding:8px 12px;border-radius:8px;font-size:13px">
+        <option value="">Todos os cartões</option>
+      </select>
+    </div>
+    <div id="det-content"></div>
+  </div>
+</div>
+
+<!-- COBRANÇAS -->
+<div class="pg" id="pg-cobrancas">
+  <div class="panels">
+    <div class="fsec">
+      <div class="ftit">➕ Nova Cobrança</div>
+      <div class="fg c2" style="margin-bottom:10px">
+        <div class="fld"><label>Devedor</label><input type="text" id="cb-nome" placeholder="Nome de quem te deve"></div>
+        <div class="fld"><label>Descrição</label><input type="text" id="cb-desc" placeholder="Ex: churrasco, empréstimo..."></div>
+      </div>
+      <div class="fg c3" style="margin-bottom:10px">
+        <div class="fld"><label>Valor total (R$)</label><input type="text" id="cb-val" placeholder="R$ 0,00" oninput="mascaraMoeda(this)"></div>
+        <div class="fld"><label>Parcelas</label><input type="number" id="cb-parc" placeholder="1" min="1" value="1" onchange="toggleCbParc()"></div>
+        <div class="fld"><label>Dia vencimento</label><input type="number" id="cb-venc" placeholder="Ex: 10" min="1" max="31"></div>
+      </div>
+      <div class="fg c2" style="margin-bottom:10px">
+        <div class="fld"><label>Mês início</label>
+          <div style="position:relative">
+            <div style="display:flex;align-items:center;gap:6px">
+              <button type="button" onclick="navCbMes(-1)" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);width:32px;height:38px;border-radius:8px;cursor:pointer;font-size:16px">‹</button>
+              <button type="button" id="cb-mes-btn" onclick="toggleCbPicker()" style="flex:1;background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);padding:9px 11px;border-radius:8px;cursor:pointer;font-size:13px;text-align:center">—</button>
+              <button type="button" onclick="navCbMes(1)" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);width:32px;height:38px;border-radius:8px;cursor:pointer;font-size:16px">›</button>
+              <select id="cb-mes" style="display:none"></select>
+            </div>
+            <div id="cb-mes-picker" style="display:none;position:absolute;z-index:600;background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:16px;width:280px;box-shadow:0 8px 32px rgba(0,0,0,.5);margin-top:4px">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                <button type="button" onclick="navCbPickerAno(-1)" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);width:28px;height:28px;border-radius:6px;cursor:pointer">‹</button>
+                <span id="cb-picker-ano" style="font-weight:700;font-size:15px"></span>
+                <button type="button" onclick="navCbPickerAno(1)" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);width:28px;height:28px;border-radius:6px;cursor:pointer">›</button>
+              </div>
+              <div id="cb-picker-meses" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px"></div>
+            </div>
+          </div>
+        </div>
+        <div class="fld"><label>Obs (opcional)</label><input type="text" id="cb-obs" placeholder="Observação..."></div>
+      </div>
+      <div class="brow"><button class="btn bp" onclick="addCobranca()">Adicionar cobrança</button></div>
+    </div>
+    <div class="fsec">
+      <div class="ftit">🔔 Alertas de Cobrança</div>
+      <div id="cb-alertas"></div>
+    </div>
+  </div>
+  <div class="fsec" style="margin-top:18px">
+    <div class="ftit">📋 Cobranças Ativas</div>
+    <div id="cb-lista"></div>
+  </div>
+</div>
+
+<!-- VENCIMENTOS -->
+<div class="pg" id="pg-vencimentos">
+  <h2 style="font-size:16px;font-weight:700;margin-bottom:18px;color:var(--acc)">📅 Datas de Vencimento</h2>
+  <p style="font-size:12px;color:var(--mut);margin-bottom:20px">Gerencie as datas de vencimento de fixos, boletos e cartões em um só lugar. As alterações refletem em todo o app.</p>
+  <div class="panel" style="margin-bottom:16px">
+    <div class="ph"><span class="pt">Contas Fixas</span></div>
+    <div id="vnc-fixos" style="padding:12px 18px;display:flex;flex-direction:column;gap:8px"></div>
+  </div>
+  <div class="panel" style="margin-bottom:16px">
+    <div class="ph"><span class="pt">Boletos</span></div>
+    <div id="vnc-boletos" style="padding:12px 18px;display:flex;flex-direction:column;gap:8px"></div>
+  </div>
+  <div class="panel" style="margin-bottom:16px">
+    <div class="ph"><span class="pt">Cartões (venc. fatura)</span></div>
+    <div id="vnc-cartoes" style="padding:12px 18px;display:flex;flex-direction:column;gap:8px"></div>
+  </div>
+</div>
+
+<!-- HISTÓRICO -->
+<div class="pg" id="pg-historico">
+  <div class="panels" style="grid-template-columns:1fr">
+    <div class="fsec">
+      <div class="ftit">🕘 Histórico de Atividades <span style="font-size:11px;color:var(--mut);font-weight:400">(tudo que você faz no app, com data e hora)</span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:14px">
+        <div class="fld" style="flex:2;min-width:180px"><label>Buscar</label><input type="text" id="hs-busca" placeholder="Descrição, cartão, ação..." oninput="renderHistorico()"></div>
+        <div class="fld" style="min-width:150px"><label>Tipo</label><select id="hs-tipo" onchange="renderHistorico()" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);padding:9px 11px;border-radius:8px;font-size:13px"><option value="">Todos</option></select></div>
+        <div class="fld" style="min-width:150px"><label>Cartão</label><select id="hs-cartao" onchange="renderHistorico()" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);padding:9px 11px;border-radius:8px;font-size:13px"><option value="">Todos</option></select></div>
+        <div class="fld" style="min-width:140px"><label>Período</label><select id="hs-periodo" onchange="renderHistorico()" style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);padding:9px 11px;border-radius:8px;font-size:13px"><option value="0">Tudo</option><option value="1">Hoje</option><option value="7">Últimos 7 dias</option><option value="30">Últimos 30 dias</option></select></div>
+        <button class="btn bs" onclick="exportarHistorico()" style="height:38px">📤 Exportar CSV</button>
+        <button class="btn bg" onclick="limparHistorico()" style="height:38px">🗑️ Limpar</button>
+      </div>
+      <div id="hs-resumo" style="font-size:12px;color:var(--mut);margin-bottom:10px"></div>
+      <div id="hs-lista"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIG -->
+<div class="pg" id="pg-config">
+  <div class="panels">
+    <div class="fsec">
+      <div class="ftit">📥 Importar / Exportar</div>
+      <p style="color:var(--mut);font-size:13px;margin-bottom:14px">Faça backup ou restaure de um arquivo anterior.</p>
+      <div class="drop" onclick="document.getElementById('imp').click()">
+        <div style="font-size:32px;margin-bottom:8px">📂</div>
+        <strong>Clique para importar backup</strong>
+        <p style="margin-top:6px;color:var(--mut)">Formato: .json exportado por este app</p>
+      </div>
+      <input type="file" id="imp" accept=".json" style="display:none" onchange="importar(event)">
+      <div class="brow" style="margin-top:14px">
+        <button class="btn bs" onclick="exportar()">📤 Exportar backup</button>
+      </div>
+    </div>
+    <div class="fsec">
+      <div class="ftit">📊 Resumo dos dados</div>
+      <div id="cfg-info" style="color:var(--mut);font-size:13px;line-height:2"></div>
+      <div style="height:16px"></div>
+      <button class="btn bg" onclick="salvarAgora()" style="margin-top:8px">💾 Salvar agora</button>
+      <div style="margin-top:14px;padding:14px;background:var(--surf2);border-radius:10px;border:1px solid var(--bdr)">
+        <div style="font-size:12px;font-weight:700;color:var(--mut);margin-bottom:10px">🔄 BACKUP AUTOMÁTICO AO FECHAR</div>
+        <div style="font-size:12px;color:var(--mut);margin-bottom:8px">O arquivo será baixado automaticamente quando você fechar o app.</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="checkbox" id="cfg-autobackup" style="width:16px;height:16px;cursor:pointer" onchange="toggleAutoBackup(this.checked)">
+          <label for="cfg-autobackup" style="font-size:13px;cursor:pointer;color:var(--txt)">Ativar backup automático ao fechar</label>
+        </div>
+        <div id="cfg-autobackup-status" style="font-size:11px;color:var(--mut);margin-top:6px"></div>
+      </div>
+      <div style="margin-top:8px"></div>
+      <button class="btn bd" onclick="confirmReset()">🗑 Limpar todos os dados</button>
+      <button class="btn bd" onclick="resetarApp()" style="margin-top:8px;opacity:.7">⚠️ Resetar app completamente</button>
+    </div>
+  </div>
+</div>
+
+<div class="mo" id="modal">
+  <div class="mbox">
+    <h3 id="m-title">Confirmar</h3><p id="m-body"></p>
+    <div class="mact">
+      <button class="btn bg" onclick="closeModal()">Cancelar</button>
+      <button class="btn bd" id="m-ok">Confirmar</button>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+// Base de dados embutida
+const INIT = {
+  "historico": [
+    {"cartao":"CAIXA","acao":"Gasto no cartão","valor":23.99,"categoria":"SERVIÇOS","ts":"2026-09-17T14:26:20.216Z","hora":"11:26","desc":"gemini","extra":"","data":"17/09/2026","mes":"SETEMBRO26"},
+    {"acao":"Marcou como pago","valor":23.99,"ts":"2026-09-17T14:24:38.238Z","hora":"11:24","mes":"AGOSTO26","cartao":"CAIXA","extra":"","data":"17/09/2026","categoria":"","desc":"gemini"},
+    {"extra":"","categoria":"","hora":"11:23","cartao":"MERCADO PAGO","data":"17/09/2026","desc":"Fatura MERCADO PAGO","valor":13573.33,"acao":"Marcou como pago","mes":"AGOSTO26","ts":"2026-09-17T14:23:26.016Z"},
+    {"categoria":"SERVIÇOS","desc":"gemini","valor":23.99,"mes":"SETEMBRO21","data":"17/09/2026","ts":"2026-09-17T14:22:03.622Z","hora":"11:22","cartao":"CAIXA","extra":"vence dia 16","acao":"Novo gasto fixo no cartão"},
+    {"desc":"spray","data":"17/09/2026","cartao":"CAIXA","valor":45,"mes":"SETEMBRO26","hora":"11:21","extra":"","ts":"2026-09-17T14:21:02.897Z","categoria":"VARIAVEIS","acao":"Gasto no cartão"},
+    {"ts":"2026-09-17T14:20:43.368Z","mes":"SETEMBRO26","acao":"Gasto no cartão","cartao":"CAIXA","extra":"","desc":"café","data":"17/09/2026","hora":"11:20","categoria":"COMER F/C","valor":11.9}
+  ],
+  "cartoes": [
+    {"nome":"BRADESCO","vencimento":10},
+    {"nome":"CAIXA","vencimento":20},
+    {"vencimento":20,"nome":"ITAU"},
+    {"vencimento":20,"nome":"MERCADO PAGO"},
+    {"nome":"NUBANK","vencimento":20},
+    {"nome":"PICPAY","vencimento":10},
+    {"nome":"SANTANDER","vencimento":20}
+  ],
+  "fixos": [
+    {"desc":"ALUGUEL","id":1,"valor":1700,"vencimento":16,"obs":"o valor real é 1156,00"},
+    {"valor":84.9,"vencimento":20,"id":2,"desc":"INTERNET"},
+    {"desc":"LUZ","id":3,"valor":0,"vencimento":25},
+    {"valor":150,"id":4,"desc":"ÁGUA","vencimento":15},
+    {"valor":33,"vencimento":20,"desc":"VIVO PÓS","id":5}
+  ],
+  "boletos": [
+    {"desc":"iptu","parcela_total":"8","parcela_atual":"1","id":1000003,"vencimento":15,"mes_inicio":"MARÇO22","valor":63.24},
+    {"parcela_total":"","id":1000010,"parcela_atual":"","desc":"voley","valor":50,"mes_inicio":"JANEIRO23","vencimento":10},
+    {"mes_inicio":"JUNHO24","parcela_total":"84","vencimento":10,"desc":"emprestimo","id":1000017,"valor":328,"parcela_atual":"27"},
+    {"mes_inicio":"NOVEMBRO24","desc":"net mãe","parcela_atual":"","vencimento":20,"valor":123.9,"id":1000018,"parcela_total":""},
+    {"mes_inicio":"AGOSTO25","valor":114.56,"parcela_total":"3","vencimento":10,"desc":"ipva corsa","id":1000022,"parcela_atual":"3"},
+    {"parcela_atual":"16","desc":"formatura","id":1000024,"vencimento":15,"mes_inicio":"SETEMBRO25","valor":241.96,"parcela_total":"39"},
+    {"desc":"SEGURO PEDRO","parcela_atual":"","parcela_total":"","vencimento":7,"valor":19.32,"id":1783815686158,"mes_inicio":"JUNHO26","pontual":false},
+    {"desc":"SEGURO VAL","parcela_total":"","pontual":false,"vencimento":7,"id":1783815750750,"mes_inicio":"JUNHO26","parcela_atual":"","valor":37.67},
+    {"pontual":true,"desc":"multa corsa","mes_inicio":"JULHO26","parcela_total":"","vencimento":20,"parcela_atual":"","valor":234.78,"id":1784247058645},
+    {"vencimento":30,"mes_inicio":"AGOSTO26","pontual":true,"parcela_total":"","desc":"licenciamento corsa","parcela_atual":"","valor":149.37,"id":1788878653915}
+  ],
+  "categorias": ["MERCADO","PARCELAS","GASOLINA","COMER F/C","FERVO/LAZER","SERVIÇOS","VARIAVEIS"],
+  "cobrancas": [
+    {"valor":1785.55,"criado":"2026-07-20T14:10:09.489Z","desc":"ar condicionado","id":1784556609489,"parcelas":[{"data_pagamento":"20/07/2026","pago":true,"mes":"JUNHO26","vencimento":10,"valor":178.56},{"pago":true,"vencimento":10,"data_pagamento":"08/08/2026","mes":"JULHO26","valor":178.56},{"pago":true,"data_pagamento":"03/09/2026","vencimento":10,"valor":178.56,"mes":"AGOSTO26"},{"mes":"SETEMBRO26","vencimento":10,"pago":false,"data_pagamento":"","valor":178.56},{"valor":178.56,"mes":"OUTUBRO26","data_pagamento":"","vencimento":10,"pago":false},{"valor":178.56,"data_pagamento":"","mes":"NOVEMBRO26","vencimento":10,"pago":false},{"pago":false,"valor":178.56,"mes":"DEZEMBRO26","vencimento":10,"data_pagamento":""},{"pago":false,"data_pagamento":"","mes":"JANEIRO27","vencimento":10,"valor":178.56},{"valor":178.56,"vencimento":10,"mes":"FEVEREIRO27","data_pagamento":"","pago":false},{"vencimento":10,"pago":false,"data_pagamento":"","mes":"MARÇO27","valor":178.56}],"nome":"Mãe","obs":""},
+    {"criado":"2026-07-20T14:13:46.961Z","obs":"","nome":"mãe","id":1784556826961,"desc":"airbnb","parcelas":[{"mes":"JULHO26","valor":92,"pago":true,"data_pagamento":"08/08/2026","vencimento":10},{"data_pagamento":"03/09/2026","mes":"AGOSTO26","valor":92,"vencimento":10,"pago":true},{"data_pagamento":"","valor":92,"pago":false,"mes":"SETEMBRO26","vencimento":10},{"vencimento":10,"data_pagamento":"","pago":false,"mes":"OUTUBRO26","valor":92},{"valor":92,"pago":false,"mes":"NOVEMBRO26","data_pagamento":"","vencimento":10},{"vencimento":10,"data_pagamento":"","mes":"DEZEMBRO26","pago":false,"valor":92}],"valor":552},
+    {"valor":132.05,"criado":"2026-08-08T21:29:23.016Z","desc":"Torradeira","parcelas":[{"vencimento":10,"pago":true,"data_pagamento":"03/09/2026","mes":"AGOSTO26","valor":132.05}],"id":1786224563016,"nome":"Mãe","obs":""}
+  ],
+  "gastos_fixos_cartao": [
+    {"id":1758100000001,"cartao":"CAIXA","categoria":"SERVIÇOS","desc":"unifique movel","valor":31.8,"mes_inicio":"SETEMBRO26","vencimento":0,"manual":false},
+    {"id":1758100000002,"cartao":"CAIXA","categoria":"SERVIÇOS","desc":"IPTV","valor":50.0,"mes_inicio":"SETEMBRO26","vencimento":0,"manual":true},
+    {"id":1758100000003,"cartao":"CAIXA","categoria":"SERVIÇOS","desc":"youtube","valor":16.9,"mes_inicio":"SETEMBRO26","vencimento":0,"manual":false},
+    {"id":1758100000004,"cartao":"CAIXA","categoria":"SERVIÇOS","desc":"academia","valor":150.0,"mes_inicio":"SETEMBRO26","vencimento":0,"manual":false},
+    {"id":1758100000005,"cartao":"CAIXA","categoria":"SERVIÇOS","desc":"CLAUDE","valor":110.0,"mes_inicio":"SETEMBRO26","vencimento":0,"manual":false},
+    {"id":1758100000006,"cartao":"CAIXA","categoria":"SERVIÇOS","desc":"gemini","valor":23.99,"mes_inicio":"SETEMBRO26","vencimento":0,"manual":false}
+  ],
+  "meses": {}
+};
+
+// Variáveis de Estado
+let DB = JSON.parse(localStorage.getItem('gastos_data')) || INIT;
+const MESES_NOMES = ['JANEIRO','FEVEREIRO','MARÇO','ABRIL','MAIO','JUNHO','JULHO','AGOSTO','SETEMBRO','OUTUBRO','NOVEMBRO','DEZEMBRO'];
+let curAno = 2026;
+let curMesIdx = 8; // SETEMBRO
+let curMesKey = 'SETEMBRO26';
+
+function initApp(){
+  atualizarMesKey();
+  popularSelects();
+  renderTudo();
+}
+
+function atualizarMesKey(){
+  const ano2 = String(curAno).slice(-2);
+  curMesKey = `${MESES_NOMES[curMesIdx]}${ano2}`;
+  document.getElementById('selMesBtn').textContent = `${MESES_NOMES[curMesIdx]} ${curAno}`;
+  const alLabel = document.getElementById('al-mes-label');
+  if(alLabel) alLabel.textContent = `${MESES_NOMES[curMesIdx]} ${curAno}`;
+}
+
+function navMes(delta){
+  curMesIdx += delta;
+  if(curMesIdx > 11){ curMesIdx = 0; curAno++; }
+  else if(curMesIdx < 0){ curMesIdx = 11; curAno--; }
+  atualizarMesKey();
+  renderTudo();
+}
+
+function showPage(pgId, btn){
+  document.querySelectorAll('.pg').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('nav .nb').forEach(b => b.classList.remove('on'));
+  const target = document.getElementById(`pg-${pgId}`);
+  if(target) target.classList.add('on');
+  if(btn) btn.classList.add('on');
+  renderTudo();
+}
+
+function formatMoeda(num){
+  return (num || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+function mascaraMoeda(input){
+  let val = input.value.replace(/\D/g, '');
+  val = (Number(val) / 100).toFixed(2) + '';
+  val = val.replace('.', ',');
+  val = val.replace(/(\d)(\d{3})(\d{3}),/g, "$1.$2.$3,");
+  val = val.replace(/(\d)(\d{3}),/g, "$1.$2,");
+  input.value = val === 'NaN' || val === '0,00' ? '' : 'R$ ' + val;
+}
+
+function parseMoeda(str){
+  if(!str) return 0;
+  if(typeof str === 'number') return str;
+  const limpo = str.replace(/[R$\s.]/g, '').replace(',', '.');
+  return parseFloat(limpo) || 0;
+}
+
+function popularSelects(){
+  const ctSelects = ['lc-cartao','gf-cartao','det-cartao','hs-cartao'];
+  ctSelects.forEach(id => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    const old = el.value;
+    el.innerHTML = (id==='det-cartao'||id==='hs-cartao') ? '<option value="">Todos os cartões</option>' : '';
+    (DB.cartoes || []).forEach(c => {
+      el.innerHTML += `<option value="${c.nome}">${c.nome}</option>`;
+    });
+    if(old) el.value = old;
+  });
+
+  const gfCat = document.getElementById('gf-cat');
+  if(gfCat){
+    gfCat.innerHTML = '';
+    (DB.categorias || []).forEach(cat => {
+      gfCat.innerHTML += `<option value="${cat}">${cat}</option>`;
+    });
+    gfCat.value = 'SERVIÇOS';
+  }
+}
+
+// Salvar / Persistência
+function salvarDB(){
+  localStorage.setItem('gastos_data', JSON.stringify(DB));
+}
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Lançamentos
+function toggleTipo(){
+  const tipo = document.getElementById('lc-tipo').value;
+  document.getElementById('lc-cf').style.display = tipo === 'cartao' ? 'block' : 'none';
+  document.getElementById('lc-of').style.display = tipo !== 'cartao' ? 'block' : 'none';
+}
+
+function toggleParc(){
+  const isP = document.getElementById('lc-parc').value === '1';
+  document.getElementById('lc-pf').style.display = isP ? 'grid' : 'none';
+}
+
+function calcParcela(){
+  const tot = parseMoeda(document.getElementById('lc-val').value);
+  const q = parseInt(document.getElementById('lc-pt').value) || 1;
+  if(tot > 0 && q > 0){
+    document.getElementById('lc-pv').value = formatMoeda(tot / q);
+  }
+}
+
+function autoRecorrentePorCategoria(){
+  const cat = document.getElementById('lc-cat').value;
+  const chk = document.getElementById('lc-recorrente');
+  if(chk) chk.checked = (cat === 'SERVIÇOS');
+}
+
+function onRecorrenteManual(){}
+
+function salvar(){
+  const tipo = document.getElementById('lc-tipo').value;
+  if(!DB.meses[curMesKey]) DB.meses[curMesKey] = { lancamentos: [], entrada: [], saida: [], pagamentos: {} };
+
+  if(tipo === 'cartao'){
+    const cartao = document.getElementById('lc-cartao').value;
+    const cat = document.getElementById('lc-cat').value;
+    const dt = document.getElementById('lc-data').value;
+    const desc = document.getElementById('lc-desc').value.trim();
+    const val = parseMoeda(document.getElementById('lc-val').value);
+    const parc = document.getElementById('lc-parc').value === '1';
+
+    if(!desc || val <= 0){ alert('Preencha descrição e valor!'); return; }
+
+    const item = {
+      cartao, categoria: cat, desc, valor: val,
+      data: dt ? dt.split('-').reverse().join('/') : '',
+      parcela_atual: parc ? document.getElementById('lc-pa').value : '',
+      parcela_total: parc ? document.getElementById('lc-pt').value : ''
+    };
+
+    DB.meses[curMesKey].lancamentos.push(item);
+    registrarHistorico('Gasto no cartão', val, desc, cartao, cat);
+  } else {
+    const desc = document.getElementById('lc-odesc').value.trim();
+    const val = parseMoeda(document.getElementById('lc-oval').value);
+    const dt = document.getElementById('lc-od').value;
+    if(!desc || val <= 0){ alert('Preencha descrição e valor!'); return; }
+
+    const item = { desc, valor: val, data: dt ? dt.split('-').reverse().join('/') : '' };
+    if(tipo === 'entrada'){
+      if(!DB.meses[curMesKey].entrada) DB.meses[curMesKey].entrada = [];
+      DB.meses[curMesKey].entrada.push(item);
+      registrarHistorico('Entrada de Dinheiro', val, desc, '', '');
+    } else {
+      if(!DB.meses[curMesKey].saida) DB.meses[curMesKey].saida = [];
+      DB.meses[curMesKey].saida.push(item);
+      registrarHistorico('Saída de Dinheiro', val, desc, '', '');
+    }
+  }
+
+  salvarDB();
+  toast('Lançamento salvo!');
+  if(!document.getElementById('lc-multi').checked) limpar();
+  renderTudo();
+}
+
+function limpar(){
+  document.getElementById('lc-desc').value = '';
+  document.getElementById('lc-val').value = '';
+  document.getElementById('lc-obs').value = '';
+  document.getElementById('lc-pa').value = '';
+  document.getElementById('lc-pt').value = '';
+  document.getElementById('lc-pv').value = '';
+  document.getElementById('lc-odesc').value = '';
+  document.getElementById('lc-oval').value = '';
+  document.getElementById('lc-oobs').value = '';
+}
+
+function registrarHistorico(acao, valor, desc, cartao, cat){
+  if(!DB.historico) DB.historico = [];
+  const agora = new Date();
+  DB.historico.unshift({
+    acao, valor, desc, cartao, categoria: cat,
+    ts: agora.toISOString(),
+    hora: agora.toTimeString().slice(0,5),
+    data: agora.toLocaleDateString('pt-BR'),
+    mes: curMesKey
+  });
+}
+
+function desfazer(){
+  if(!DB.historico || DB.historico.length === 0) return;
+  const last = DB.historico.shift();
+  salvarDB();
+  toast(`Ação desfeita: ${last.acao} (${last.desc})`);
+  renderTudo();
+}
+
+// Assinaturas / Gastos Fixos Cartão (Aba Cartões)
+function addGastoFixoCartao(){
+  const cartao = document.getElementById('gf-cartao').value;
+  const categoria = document.getElementById('gf-cat').value;
+  const desc = document.getElementById('gf-desc').value.trim();
+  const valor = parseMoeda(document.getElementById('gf-val').value);
+  const venc = parseInt(document.getElementById('gf-venc').value) || 0;
+  const manual = document.getElementById('gf-manual').checked;
+
+  if(!desc || valor <= 0){ alert('Informe descrição e valor!'); return; }
+
+  if(!DB.gastos_fixos_cartao) DB.gastos_fixos_cartao = [];
+  DB.gastos_fixos_cartao.push({
+    id: Date.now(),
+    cartao, categoria, desc, valor,
+    vencimento: venc,
+    mes_inicio: curMesKey,
+    manual: manual
+  });
+
+  document.getElementById('gf-desc').value = '';
+  document.getElementById('gf-val').value = '';
+  document.getElementById('gf-venc').value = '';
+  document.getElementById('gf-manual').checked = false;
+
+  salvarDB();
+  toast('Assinatura/Serviço cadastrado com sucesso!');
+  renderGastosFixosCartao();
+}
+
+function delGastoFixoCartao(id){
+  DB.gastos_fixos_cartao = (DB.gastos_fixos_cartao || []).filter(g => g.id !== id);
+  salvarDB();
+  toast('Removido!');
+  renderGastosFixosCartao();
+}
+
+function renderGastosFixosCartao(){
+  const container = document.getElementById('gf-lista');
+  if(!container) return;
+  const itens = DB.gastos_fixos_cartao || [];
+
+  if(itens.length === 0){
+    container.innerHTML = '<div class="empty">Nenhuma assinatura vinculada aos cartões.</div>';
+    return;
+  }
+
+  container.innerHTML = itens.map(g => `
+    <div class="si">
+      <div>
+        <strong>${g.desc}</strong>
+        <span class="tag" style="background:var(--surf);margin-left:6px;border:1px solid var(--bdr)">${g.cartao}</span>
+        ${g.manual ? '<span class="tag" style="background:rgba(245,197,66,.15);color:var(--yel);margin-left:6px">⚠️ Renovação Manual</span>' : '<span class="tag" style="background:rgba(91,127,255,.15);color:var(--acc);margin-left:6px">Fatura Automática</span>'}
+        <div style="font-size:11px;color:var(--mut);margin-top:2px">
+          ${g.vencimento ? `Vencimento/Cobrança dia ${g.vencimento} • ` : ''} Início: ${g.mes_inicio || '—'}
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <strong style="color:var(--acc)">${formatMoeda(g.valor)}</strong>
+        <button class="btn bd" style="padding:4px 8px;font-size:11px" onclick="delGastoFixoCartao(${g.id})">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Alertas de Vencimento
+function renderAlertas(){
+  const elFx = document.getElementById('al-fixas');
+  const elBl = document.getElementById('al-boletos');
+  const elCt = document.getElementById('al-cartoes');
+  const elGf = document.getElementById('al-gastos-fixos');
+  if(!elFx) return;
+
+  const mesData = DB.meses[curMesKey] || { pagamentos: {} };
+  const pags = mesData.pagamentos || {};
+
+  // Fixas
+  elFx.innerHTML = (DB.fixos || []).map(f => {
+    const pago = pags[`fixo_${f.id}`];
+    return `
+      <div class="alerta-item ${pago ? 'al-paid' : 'al-ok'}">
+        <div>
+          <div class="al-name">${f.desc}</div>
+          <div class="al-sub">Vence dia ${f.vencimento} ${f.obs ? '• ' + f.obs : ''}</div>
+        </div>
+        <div class="al-right">
+          <span class="al-val">${formatMoeda(f.valor)}</span>
+          <button class="btn ${pago ? 'bg' : 'bs'}" style="padding:5px 10px;font-size:11px" onclick="togglePago('fixo_${f.id}', ${f.valor}, '${f.desc}')">
+            ${pago ? '✓ Pago' : 'Pagar'}
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('') || '<div class="empty">Nenhuma conta fixa.</div>';
+
+  // Boletos
+  elBl.innerHTML = (DB.boletos || []).map(b => {
+    const pago = pags[`boleto_${b.id}`];
+    return `
+      <div class="alerta-item ${pago ? 'al-paid' : 'al-ok'}">
+        <div>
+          <div class="al-name">${b.desc} ${b.parcela_atual ? `(${b.parcela_atual}/${b.parcela_total||'?'})` : ''}</div>
+          <div class="al-sub">Vence dia ${b.vencimento}</div>
+        </div>
+        <div class="al-right">
+          <span class="al-val">${formatMoeda(b.valor)}</span>
+          <button class="btn ${pago ? 'bg' : 'bs'}" style="padding:5px 10px;font-size:11px" onclick="togglePago('boleto_${b.id}', ${b.valor}, '${b.desc}')">
+            ${pago ? '✓ Pago' : 'Pagar'}
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('') || '<div class="empty">Nenhum boleto.</div>';
+
+  // Cartões (Faturas)
+  elCt.innerHTML = (DB.cartoes || []).map(c => {
+    const totalFatura = calcularTotalFatura(c.nome, curMesKey);
+    const pago = pags[`cartao_${c.nome}`];
+    return `
+      <div class="alerta-item ${pago ? 'al-paid' : 'al-warn'}">
+        <div>
+          <div class="al-name">Fatura ${c.nome}</div>
+          <div class="al-sub">Vencimento dia ${c.vencimento} • Quita todas as assinaturas vinculadas</div>
+        </div>
+        <div class="al-right">
+          <span class="al-val">${formatMoeda(totalFatura)}</span>
+          <button class="btn ${pago ? 'bg' : 'bs'}" style="padding:5px 10px;font-size:11px" onclick="togglePago('cartao_${c.nome}', ${totalFatura}, 'Fatura ${c.nome}', '${c.nome}')">
+            ${pago ? '✓ Fatura Paga' : 'Pagar Fatura'}
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('') || '<div class="empty">Nenhum cartão cadastrado.</div>';
+
+  // Lembretes de Assinaturas & Serviços (SEM botão individual se automático)
+  elGf.innerHTML = (DB.gastos_fixos_cartao || []).map(g => {
+    const faturaPaga = pags[`cartao_${g.cartao}`];
+    return `
+      <div class="alerta-item ${faturaPaga ? 'al-paid' : (g.manual ? 'al-warn' : 'al-ok')}">
+        <div>
+          <div class="al-name">${g.desc}</div>
+          <div class="al-sub">Cobrado em: <strong>${g.cartao}</strong> ${g.vencimento ? `• Dia ${g.vencimento}` : ''}</div>
+        </div>
+        <div class="al-right">
+          <span class="al-val">${formatMoeda(g.valor)}</span>
+          ${faturaPaga ? 
+            '<span class="tag ti" style="font-size:12px">✓ Quitado na Fatura</span>' : 
+            (g.manual ? 
+              '<span class="tag" style="background:rgba(245,197,66,.2);color:var(--yel);font-size:11px">⚠️ Ação Manual / Conferir</span>' : 
+              '<span class="tag" style="background:rgba(91,127,255,.15);color:var(--acc);font-size:11px">Cobrança no Cartão</span>'
+            )
+          }
+        </div>
+      </div>
+    `;
+  }).join('') || '<div class="empty">Nenhuma assinatura recorrente no cartão.</div>';
+}
+
+function togglePago(chave, valor, desc, cartaoNome){
+  if(!DB.meses[curMesKey]) DB.meses[curMesKey] = { pagamentos: {} };
+  if(!DB.meses[curMesKey].pagamentos) DB.meses[curMesKey].pagamentos = {};
+
+  const atual = DB.meses[curMesKey].pagamentos[chave];
+  if(atual){
+    delete DB.meses[curMesKey].pagamentos[chave];
+    registrarHistorico('Desmarcou como pago', valor, desc, cartaoNome||'', '');
+    toast('Marcado como pendente.');
+  } else {
+    DB.meses[curMesKey].pagamentos[chave] = true;
+    registrarHistorico('Marcou como pago', valor, desc, cartaoNome||'', '');
+    toast('Marcado como pago!');
+  }
+  salvarDB();
+  renderTudo();
+}
+
+function calcularTotalFatura(cartaoNome, mesKey){
+  const m = DB.meses[mesKey];
+  let total = 0;
+  if(m && m.lancamentos){
+    m.lancamentos.forEach(l => {
+      if(l.cartao === cartaoNome) total += (l.valor || 0);
+    });
+  }
+  return total;
+}
+
+// Render Geral
+function renderTudo(){
+  renderDashboard();
+  renderAlertas();
+  renderGastosFixosCartao();
+  renderLancamentosMes();
+  renderHistorico();
+  popularSelects();
+}
+
+function renderDashboard(){
+  let totalDebitos = 0;
+  let totalDinheiro = 0;
+  const m = DB.meses[curMesKey];
+
+  let totalFixas = 0;
+  (DB.fixos || []).forEach(f => totalFixas += (f.valor || 0));
+  let totalBoletos = 0;
+  (DB.boletos || []).forEach(b => totalBoletos += (b.valor || 0));
+
+  let totalCartoes = 0;
+  (DB.cartoes || []).forEach(c => {
+    totalCartoes += calcularTotalFatura(c.nome, curMesKey);
+  });
+
+  let totalEntradas = 0;
+  let totalSaidas = 0;
+  if(m){
+    (m.entrada || []).forEach(e => totalEntradas += (e.valor || 0));
+    (m.saida || []).forEach(s => totalSaidas += (s.valor || 0));
+  }
+
+  totalDebitos = totalFixas + totalBoletos + totalCartoes + totalSaidas;
+  totalDinheiro = totalEntradas - totalSaidas;
+  const saldoFinal = totalDinheiro - (totalFixas + totalBoletos + totalCartoes);
+
+  document.getElementById('db-deb').textContent = formatMoeda(totalDebitos);
+  document.getElementById('db-sal').textContent = formatMoeda(totalDinheiro);
+  const elRes = document.getElementById('db-res');
+  elRes.textContent = formatMoeda(saldoFinal);
+  elRes.className = 'vl ' + (saldoFinal >= 0 ? 'pos' : 'neg');
+
+  document.getElementById('db-fx-tot').textContent = formatMoeda(totalFixas);
+  document.getElementById('db-bl-tot').textContent = formatMoeda(totalBoletos);
+  document.getElementById('db-ca-tot').textContent = formatMoeda(totalCartoes);
+  document.getElementById('db-en-tot').textContent = formatMoeda(totalEntradas);
+  document.getElementById('db-sa-tot').textContent = formatMoeda(totalSaidas);
+
+  const cardsContainer = document.getElementById('db-cards');
+  if(cardsContainer){
+    cardsContainer.innerHTML = (DB.cartoes || []).map(c => `
+      <div class="ci">
+        <span class="cn">${c.nome}</span>
+        <span class="cv">${formatMoeda(calcularTotalFatura(c.nome, curMesKey))}</span>
+      </div>
+    `).join('');
+  }
+}
+
+function renderLancamentosMes(){
+  const tb = document.getElementById('lc-tb');
+  const count = document.getElementById('lc-count');
+  if(!tb) return;
+  const m = DB.meses[curMesKey];
+  const list = (m && m.lancamentos) ? m.lancamentos : [];
+  count.textContent = `${list.length} itens`;
+
+  tb.innerHTML = list.map((l, i) => `
+    <tr>
+      <td>${l.data || '—'}</td>
+      <td><span class="tag ti">${l.cartao}</span></td>
+      <td>${l.categoria || '—'}</td>
+      <td>${l.desc}</td>
+      <td>${l.parcela_atual ? `${l.parcela_atual}/${l.parcela_total}` : '—'}</td>
+      <td><strong>${formatMoeda(l.valor)}</strong></td>
+      <td><button class="btn bd" style="padding:2px 6px;font-size:11px" onclick="delLancamento(${i})">✕</button></td>
+    </tr>
+  `).join('');
+}
+
+function delLancamento(idx){
+  if(DB.meses[curMesKey] && DB.meses[curMesKey].lancamentos){
+    DB.meses[curMesKey].lancamentos.splice(idx, 1);
+    salvarDB();
+    renderTudo();
+  }
+}
+
+function renderHistorico(){
+  const container = document.getElementById('hs-lista');
+  if(!container) return;
+  const list = DB.historico || [];
+  container.innerHTML = list.slice(0, 50).map(h => `
+    <div class="si" style="font-size:12px">
+      <div>
+        <strong>${h.acao}</strong>: ${h.desc || ''} ${h.cartao ? `(${h.cartao})` : ''}
+        <div style="font-size:11px;color:var(--mut)">${h.data} às ${h.hora} • Mês: ${h.mes}</div>
+      </div>
+      <div><strong>${h.valor ? formatMoeda(h.valor) : ''}</strong></div>
+    </div>
+  `).join('');
+}
+
+function exportar(){
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(DB, null, 2));
+  const a = document.createElement('a');
+  a.setAttribute("href", dataStr);
+  a.setAttribute("download", `gastos_backup_${curMesKey}.json`);
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+function importar(evt){
+  const file = evt.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      DB = JSON.parse(e.target.result);
+      salvarDB();
+      toast('Backup restaurado com sucesso!');
+      renderTudo();
+    }catch(err){ alert('Arquivo inválido!'); }
+  };
+  reader.readAsText(file);
+}
+
+function confirmReset(){
+  if(confirm('Atenção: deseja realmente limpar todos os dados do app?')){
+    localStorage.removeItem('gastos_data');
+    DB = JSON.parse(JSON.stringify(INIT));
+    renderTudo();
+    toast('Dados resetados!');
+  }
+}
+
+window.onload = initApp;
+</script>
+</body>
+</html>
